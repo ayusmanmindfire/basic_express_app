@@ -59,7 +59,23 @@ router.get('/', verifyToken, async (req, res, next) => {
     try {
         const allUsers = await User.find();
         // console.log(req.user.name)
-        successResponse(res, allUsers, "All users fetched", 200)
+        return successResponse(res, allUsers, "All users fetched", 200)
+    } catch (error) {
+        next(error)
+    }
+})
+
+router.get('/search',async(req,res,next)=>{
+    try {
+        const searchQuery=req.query.searchQuery;
+        if(!searchQuery){
+            const allUsers=await User.find();
+            return successResponse(res, allUsers, "All users fetched", 200)
+        }
+        else{
+            const filteredUsers=await User.find({$text:{$search:searchQuery}});
+            return successResponse(res, filteredUsers, "Filtered users fetched according to search query", 200)
+        }
     } catch (error) {
         next(error)
     }
